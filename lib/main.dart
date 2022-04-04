@@ -1,98 +1,132 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:audioplayers/audioplayers.dart';
-void main(){
-  runApp(MyApp());
+import 'QuizBank.dart';
+// ignore: implementation_imports
+import 'package:flutter/src/material/theme.dart';
+import 'Questions.dart';
+
+
+void main() {
+  runApp(MyQuizApp());
 }
 
-class MyApp extends StatefulWidget {
-
-
+class MyQuizApp extends StatelessWidget {
   @override
-  _PhoneState createState() => _PhoneState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Theme(
+        // Create a unique theme with `ThemeData`
+        data: ThemeData(
+          splashColor: Colors.yellow,
+        ),
+        child: Scaffold(
+          backgroundColor: Colors.white,
+          appBar: AppBar(
+            title: Text('Quizzler'),
+            backgroundColor: Colors.deepPurple,
+          ),
+          body: SafeArea(
+            child: MyQuiz(),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _PhoneState extends State<MyApp> {
-  final dplay = AudioCache();
-  void soundfuntion(int rate){
-    dplay.play("note$rate.wav");
+class MyQuiz extends StatefulWidget {
+  
+  @override
+  _MyQuizState createState() => _MyQuizState();
+}
+
+class _MyQuizState extends State<MyQuiz> {
+  
+  //make clas objects with class data type
+  QuizBrain obj = QuizBrain();
+  List<Widget> scorkeeper = [];
+
+  void compareAnswer(bool answer) {
+    bool corretAnswer = obj.CorrectAnswer();
+    if (obj.isFinished() == true) {
+        obj.reset();
+        scorkeeper = [];
+    } else {
+      if (corretAnswer == answer) {
+        scorkeeper.add(
+          Icon(Icons.check, color: Colors.green),
+        );
+      } else {
+        scorkeeper.add(
+          Icon(Icons.close, color: Colors.red),
+        );
+      }
+      setState(() {
+        obj.nextQuestions();
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SafeArea(
-
-        child: Scaffold(
-          body:Row(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              Expanded(
-                child: FlatButton(
-                  color: Colors.yellow,
-                  onPressed: (){
-                    soundfuntion(1);
-                  },
-                  child: Text(""),
-                ),
+    return Container(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            flex: 5,
+            child: Center(
+              child: Text(
+                obj.GetQuestions(),
+                style: TextStyle(fontSize: 18),
               ),
-              Expanded(
-                child: FlatButton(
-                  color: Colors.black,
-                  onPressed: (){
-                    soundfuntion(2);
-                  },
-                  child: Text(""),
-                ),
-              ),
-              Expanded(
-                child: FlatButton(
-                  color: Colors.purple,
-                  onPressed: (){
-                    soundfuntion(3);
-                  },
-                  child: Text(""),
-                ),
-              ),
-              Expanded(
-                child: FlatButton(
-                  color: Colors.cyan,
-                  onPressed: (){
-                    soundfuntion(4);
-                  },
-                  child: Text(""),
-                ),
-              ),
-              Expanded(
-                child: FlatButton(
-                  color: Colors.deepOrange,
-                  onPressed: (){
-                    soundfuntion(5);
-                  },
-                  child: Text(""),
-                ),
-              ),
-              Expanded(
-                child: FlatButton(
-                  color: Colors.red,
-                  onPressed: (){
-                    soundfuntion(6);
-                  },
-                  child: Text(""),
-                ),
-              ),
-              Expanded(
-                child: FlatButton(
-                  color: Colors.lightGreenAccent,
-                  onPressed: (){
-                    soundfuntion(7);
-                  },
-                  child: Text(""),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FlatButton(
+                shape: StadiumBorder(),
+                onPressed: () {
+                  compareAnswer(true);
+                },
+                child: Text(
+                  'True',
+                  style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold),
+                ),
+                color: Colors.deepPurple,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FlatButton(
+                  shape: StadiumBorder(),
+                  color: Colors.deepPurple,
+                  onPressed: () {
+                    compareAnswer(false);
+                  },
+                  child: Text(
+                    'False',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold),
+                  ),),
+            ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          Row(
+            children: scorkeeper,
+          )
+        ],
       ),
     );
   }
